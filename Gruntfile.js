@@ -68,7 +68,7 @@ module.exports = function(grunt) {
 
     browserify: {
       options: {
-        debug: true,
+        debug: false,
         alias: [
           'node_modules/rendr-handlebars/index.js:rendr-handlebars'
         ],
@@ -96,6 +96,13 @@ module.exports = function(grunt) {
         ],
         dest: 'public/testBundle.js'
       }
+    },
+
+    uglify: {
+      app: {
+        src: ['public/mergedAssets.js'],
+        dest: 'public/mergedAssets.min.js'
+      }
     }
   });
 
@@ -103,6 +110,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-handlebars');
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
 
   grunt.registerTask('runNode', function () {
     grunt.util.spawn({
@@ -117,7 +125,7 @@ module.exports = function(grunt) {
   });
 
 
-  grunt.registerTask('compile', ['handlebars', 'browserify', 'stylus']);
+  grunt.registerTask('compile', ['handlebars', 'browserify', 'stylus', 'uglify']);
 
   // Run the server and watch for file changes
   grunt.registerTask('server', ['compile', 'runNode', 'watch']);
