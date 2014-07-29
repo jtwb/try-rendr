@@ -1,0 +1,21 @@
+{
+  "name": "try-rendr",
+  "main": "index.js",
+  "version": "0.0.0",
+  "authors": [
+    "Jason Benterou <jason.benterou@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.11.1"
+  }
+}
