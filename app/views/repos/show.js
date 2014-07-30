@@ -1,6 +1,7 @@
-var BaseView = require('../base');
+var ReactView = require('../react');
+var Repo = require('../../components/Repo');
 
-module.exports = BaseView.extend({
+module.exports = ReactView.extend({
   className: 'repos_show_view',
 
   getTemplateData: function() {
