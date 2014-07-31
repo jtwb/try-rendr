@@ -4,7 +4,7 @@ var BaseAppView = require('rendr/client/app_view')
 ;
 
 module.exports = BaseAppView.extend({
-  initialize: function() {
+  postInitialize: function() {
     this.app.on('change:loading', function(app, loading) {
       $body.toggleClass('loading', loading);
     });

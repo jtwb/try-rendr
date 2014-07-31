@@ -110,9 +110,9 @@ module.exports.id = 'Wishlists';
 
 },{"../models/wishlist":"LFobQP","./base":"rCVOCK"}],"app/collections/wishlists":[function(require,module,exports){
 module.exports=require('dbheZC');
-},{}],"app/config/i18n":[function(require,module,exports){
-module.exports=require('RW+RNx');
-},{}],"RW+RNx":[function(require,module,exports){
+},{}],"app/config/environment":[function(require,module,exports){
+module.exports=require('PGgJ+a');
+},{}],"PGgJ+a":[function(require,module,exports){
 module.exports = {
   language: 'es-MX',
   locale: 'es'
@@ -247,10 +247,12 @@ module.exports = {
   }
 };
 
+},{}],"app/lib/handlebarsHelpers":[function(require,module,exports){
+module.exports=require('Cu+0Ho');
 },{}],"Cu+0Ho":[function(require,module,exports){
 var Polyglot = require('node-polyglot');
 var lang = require('../i18n/all.js');
-var env = require('../config/i18n.js');
+var env = require('../config/environment.js');
 
 var polyglotBundle = new Polyglot({
   locale: env.locale,
@@ -270,9 +272,7 @@ module.exports = function(Handlebars) {
   };
 };
 
-},{"../config/i18n.js":"RW+RNx","../i18n/all.js":"P/YCR8","node-polyglot":98}],"app/lib/handlebarsHelpers":[function(require,module,exports){
-module.exports=require('Cu+0Ho');
-},{}],"app/models/base":[function(require,module,exports){
+},{"../config/environment.js":"PGgJ+a","../i18n/all.js":"P/YCR8","node-polyglot":98}],"app/models/base":[function(require,module,exports){
 module.exports=require('qnrstJ');
 },{}],"qnrstJ":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/model');
@@ -337,7 +337,7 @@ var Router = module.exports = function Router(options) {
 Router.prototype = Object.create(BaseClientRouter.prototype);
 Router.prototype.constructor = BaseClientRouter;
 
-Router.prototype.initialize = function() {
+Router.prototype.postInitialize = function() {
   this.on('action:start', this.trackImpression, this);
 };
 
@@ -686,6 +686,8 @@ function program1(depth0,data) {
 return templates;
 
 };
+},{}],"app/views/app_view":[function(require,module,exports){
+module.exports=require('5syn3K');
 },{}],"5syn3K":[function(require,module,exports){
 var BaseAppView = require('rendr/client/app_view')
   , $ = require('jquery')
@@ -693,7 +695,7 @@ var BaseAppView = require('rendr/client/app_view')
 ;
 
 module.exports = BaseAppView.extend({
-  initialize: function() {
+  postInitialize: function() {
     this.app.on('change:loading', function(app, loading) {
       $body.toggleClass('loading', loading);
     });
@@ -704,9 +706,7 @@ module.exports = BaseAppView.extend({
   }
 });
 
-},{"jquery":"EoZ3ID","rendr/client/app_view":119}],"app/views/app_view":[function(require,module,exports){
-module.exports=require('5syn3K');
-},{}],"6kWBjj":[function(require,module,exports){
+},{"jquery":"EoZ3ID","rendr/client/app_view":119}],"6kWBjj":[function(require,module,exports){
 var RendrView = require('rendr/shared/base/view');
 
 // Create a base view, for adding common extensions to our
@@ -16248,25 +16248,4 @@ describe('UsersShowView', function() {
 
 });
 
-},{"../../../app/app":"LentoW","../../../app/views/users/show":"/O4NWC","chai":63}],138:[function(require,module,exports){
-require('chai');
-var WishlistsView = require('../../../app/views/wishlists/index')
-  , App = require('../../../app/app')
-;
-
-describe('WishlistsView', function() {
-
-  beforeEach(function() {
-    this.app = new App({rootPath: '/'});
-  });
-
-  it('should have repos data in getTemplateData', function() {
-    var repos = [{foo: 'bar'}];
-    var view = new WishlistsView({ repos: repos, app: this.app });
-    var data = view.getTemplateData();
-    data.should.have.property('repos', repos);
-  });
-
-});
-
-},{"../../../app/app":"LentoW","../../../app/views/wishlists/index":"GCGXSt","chai":63}]},{},[135,136,137,138])
+},{"../../../app/app":"LentoW","../../../app/views/users/show":"/O4NWC","chai":63}]},{},[135,136,137])

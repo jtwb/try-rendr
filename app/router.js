@@ -10,7 +10,7 @@ var Router = module.exports = function Router(options) {
 Router.prototype = Object.create(BaseClientRouter.prototype);
 Router.prototype.constructor = BaseClientRouter;
 
-Router.prototype.initialize = function() {
+Router.prototype.postInitialize = function() {
   this.on('action:start', this.trackImpression, this);
 };
 
