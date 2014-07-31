@@ -1,4 +1,11 @@
-var lang = require('../i18n/all.js')
+var Polyglot = require('node-polyglot');
+var lang = require('../i18n/all.js');
+var env = require('../config/environment.js');
+
+var polyglotBundle = new Polyglot({
+  locale: env.locale,
+  phrases: lang[env.language]
+});
 
 /**
  * We inject the Handlebars instance, because this module doesn't know where
@@ -9,10 +16,6 @@ module.exports = function(Handlebars) {
     copyright: function(year) {
       return new Handlebars.SafeString("&copy;" + year);
     },
-    localize: function(term) {
-      var language = 'en';
-      var bundle = lang[language];
-      return term in bundle ? bundle[term] : term;
-    }
+    t: polyglotBundle.t.bind(polyglotBundle)
   };
 };

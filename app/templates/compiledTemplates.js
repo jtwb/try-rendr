@@ -257,12 +257,8 @@ function program1(depth0,data) {
     + "</a>\n    (";
   stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  if (stack1 = helpers.count_all_active_items) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.count_all_active_items; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + " ";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, depth0.count_inflected_label, options) : helperMissing.call(depth0, "localize", depth0.count_inflected_label, options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "num_items", depth0.count_all_active_items, options) : helperMissing.call(depth0, "t", "num_items", depth0.count_all_active_items, options)))
     + ")\n  </li>\n";
   return buffer;
   }
@@ -270,14 +266,14 @@ function program2(depth0,data) {
   
   var buffer = "", stack1, options;
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "localize", "default", options)))
-    + " ";
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "t", "default", options)))
+    + ", ";
   return buffer;
   }
 
   buffer += "<h1>";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "localize", "My Wishlists", options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "t", "My Wishlists", options)))
     + "</h1>\n\n<ul>\n";
   stack2 = helpers.each.call(depth0, depth0.models, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }

@@ -58,14 +58,14 @@ module.exports = BaseApp.extend({
 
 });
 
-},{"./lib/handlebarsHelpers":"Cu+0Ho","./views/app_view":"5syn3K","rendr/shared/app":86}],"app/app":[function(require,module,exports){
+},{"./lib/handlebarsHelpers":"Cu+0Ho","./views/app_view":"5syn3K","rendr/shared/app":90}],"app/app":[function(require,module,exports){
 module.exports=require('LentoW');
 },{}],"rCVOCK":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/collection');
 
 module.exports = RendrBase.extend({});
 
-},{"rendr/shared/base/collection":87}],"app/collections/base":[function(require,module,exports){
+},{"rendr/shared/base/collection":91}],"app/collections/base":[function(require,module,exports){
 module.exports=require('rCVOCK');
 },{}],"app/collections/repos":[function(require,module,exports){
 module.exports=require('clZNru');
@@ -110,6 +110,14 @@ module.exports.id = 'Wishlists';
 
 },{"../models/wishlist":"LFobQP","./base":"rCVOCK"}],"app/collections/wishlists":[function(require,module,exports){
 module.exports=require('dbheZC');
+},{}],"app/config/i18n":[function(require,module,exports){
+module.exports=require('RW+RNx');
+},{}],"RW+RNx":[function(require,module,exports){
+module.exports = {
+  language: 'es-MX',
+  locale: 'es'
+};
+
 },{}],"n5JPJf":[function(require,module,exports){
 module.exports = {
   index: function(params, callback) {
@@ -190,7 +198,7 @@ module.exports = {
   }
 };
 
-},{"underscore":97}],"bX80+R":[function(require,module,exports){
+},{"underscore":101}],"bX80+R":[function(require,module,exports){
 module.exports = {
   index: function(params, callback) {
     this.app.set('title', 'My Wishlists');
@@ -223,22 +231,31 @@ module.exports = {
 
 },{}],"app/controllers/wishlists_controller":[function(require,module,exports){
 module.exports=require('bX80+R');
+},{}],"app/i18n/all":[function(require,module,exports){
+module.exports=require('P/YCR8');
 },{}],"P/YCR8":[function(require,module,exports){
 module.exports = {
-  'en': {
+  'en-US': {
     'My Wishlists': "My Wishlists",
-    'item': 'item',
-    'items': 'items',
+    "num_items": "%{smart_count} item |||| %{smart_count} items",
     'default': 'default'
+  },
+  'es-MX': {
+    'My Wishlists': "Mis listas de regalo",
+    "num_items": "%{smart_count} artículo |||| %{smart_count} artículos",
+    'default': 'defecto'
   }
 };
 
-},{}],"app/i18n/all":[function(require,module,exports){
-module.exports=require('P/YCR8');
-},{}],"app/lib/handlebarsHelpers":[function(require,module,exports){
-module.exports=require('Cu+0Ho');
 },{}],"Cu+0Ho":[function(require,module,exports){
-var lang = require('../i18n/all.js')
+var Polyglot = require('node-polyglot');
+var lang = require('../i18n/all.js');
+var env = require('../config/i18n.js');
+
+var polyglotBundle = new Polyglot({
+  locale: env.locale,
+  phrases: lang[env.language]
+});
 
 /**
  * We inject the Handlebars instance, because this module doesn't know where
@@ -249,22 +266,20 @@ module.exports = function(Handlebars) {
     copyright: function(year) {
       return new Handlebars.SafeString("&copy;" + year);
     },
-    localize: function(term) {
-      var language = 'en';
-      var bundle = lang[language];
-      return term in bundle ? bundle[term] : term;
-    }
+    t: polyglotBundle.t.bind(polyglotBundle)
   };
 };
 
-},{"../i18n/all.js":"P/YCR8"}],"app/models/base":[function(require,module,exports){
+},{"../config/i18n.js":"RW+RNx","../i18n/all.js":"P/YCR8","node-polyglot":65}],"app/lib/handlebarsHelpers":[function(require,module,exports){
+module.exports=require('Cu+0Ho');
+},{}],"app/models/base":[function(require,module,exports){
 module.exports=require('qnrstJ');
 },{}],"qnrstJ":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/model');
 
 module.exports = RendrBase.extend({});
 
-},{"rendr/shared/base/model":88}],"Lkugus":[function(require,module,exports){
+},{"rendr/shared/base/model":92}],"Lkugus":[function(require,module,exports){
 var Base = require('./base');
 
 module.exports = Base.extend({
@@ -332,7 +347,7 @@ Router.prototype.trackImpression = function() {
   }
 };
 
-},{"rendr/client/router":83}],"app/router":[function(require,module,exports){
+},{"rendr/client/router":87}],"app/router":[function(require,module,exports){
 module.exports=require('86KJBY');
 },{}],"app/routes":[function(require,module,exports){
 module.exports=require('bbl2t2');
@@ -609,12 +624,8 @@ function program1(depth0,data) {
     + "</a>\n    (";
   stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  if (stack1 = helpers.count_all_active_items) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.count_all_active_items; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + " ";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, depth0.count_inflected_label, options) : helperMissing.call(depth0, "localize", depth0.count_inflected_label, options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "num_items", depth0.count_all_active_items, options) : helperMissing.call(depth0, "t", "num_items", depth0.count_all_active_items, options)))
     + ")\n  </li>\n";
   return buffer;
   }
@@ -622,14 +633,14 @@ function program2(depth0,data) {
   
   var buffer = "", stack1, options;
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "localize", "default", options)))
-    + " ";
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "t", "default", options)))
+    + ", ";
   return buffer;
   }
 
   buffer += "<h1>";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "localize", "My Wishlists", options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "t", "My Wishlists", options)))
     + "</h1>\n\n<ul>\n";
   stack2 = helpers.each.call(depth0, depth0.models, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
@@ -693,7 +704,7 @@ module.exports = BaseAppView.extend({
   }
 });
 
-},{"jquery":"EoZ3ID","rendr/client/app_view":82}],"app/views/app_view":[function(require,module,exports){
+},{"jquery":"EoZ3ID","rendr/client/app_view":86}],"app/views/app_view":[function(require,module,exports){
 module.exports=require('5syn3K');
 },{}],"6kWBjj":[function(require,module,exports){
 var RendrView = require('rendr/shared/base/view');
@@ -702,7 +713,7 @@ var RendrView = require('rendr/shared/base/view');
 // application's views.
 module.exports = RendrView.extend({});
 
-},{"rendr/shared/base/view":90}],"app/views/base":[function(require,module,exports){
+},{"rendr/shared/base/view":94}],"app/views/base":[function(require,module,exports){
 module.exports=require('6kWBjj');
 },{}],"app/views/home/index":[function(require,module,exports){
 module.exports=require('to5G6a');
@@ -782,16 +793,7 @@ module.exports=require('GCGXSt');
 var BaseView = require('../base');
 
 module.exports = BaseView.extend({
-  className: 'wishlists',
-  getTemplateData: function() {
-    var data = BaseView.prototype.getTemplateData.call(this);
-    data.models.forEach(function(model) {
-      var count = model.count_all_active_items;
-      model.count_inflected_label =
-        count > 1 ? 'items' : 'item';
-    });
-    return data;
-  }
+  className: 'wishlists'
 });
 module.exports.id = 'wishlists/index';
 
@@ -801,12 +803,7 @@ module.exports=require('zPzHVa');
 var BaseView = require('../base');
 
 module.exports = BaseView.extend({
-  className: 'wishlist-detail',
-  getTemplateData: function() {
-    var data = BaseView.prototype.getTemplateData.call(this);
-    console.log(data);
-    return data;
-  }
+  className: 'wishlist-detail'
 });
 module.exports.id = 'wishlists/show';
 
@@ -825,9 +822,9 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"jquery":[function(require,module,exports){
 module.exports=require('EoZ3ID');
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -891,6 +888,296 @@ process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
+
+},{}],65:[function(require,module,exports){
+// Added for convenience in the Node environment.
+// The meat and potatoes exist in ./lib/polyglot.js.
+module.exports = require('./lib/polyglot');
+
+},{"./lib/polyglot":66}],66:[function(require,module,exports){
+//     (c) 2012 Airbnb, Inc.
+//
+//     polyglot.js may be freely distributed under the terms of the BSD
+//     license. For all licensing information, details, and documention:
+//     http://airbnb.github.com/polyglot.js
+//
+//
+// Polyglot.js is an I18n helper library written in JavaScript, made to
+// work both in the browser and in Node. It provides a simple solution for
+// interpolation and pluralization, based off of Airbnb's
+// experience adding I18n functionality to its Backbone.js and Node apps.
+//
+// Polylglot is agnostic to your translation backend. It doesn't perform any
+// translation; it simply gives you a way to manage translated phrases from
+// your client- or server-side JavaScript application.
+//
+
+!function(root) {
+  'use strict';
+
+  // ### Polyglot class constructor
+  function Polyglot(options) {
+    options = options || {};
+    this.phrases = {};
+    this.extend(options.phrases || {});
+    this.currentLocale = options.locale || 'en';
+    this.allowMissing = !!options.allowMissing;
+    this.warn = options.warn || warn;
+  }
+
+  // ### Version
+  Polyglot.VERSION = '0.4.1';
+
+  // ### polyglot.locale([locale])
+  //
+  // Get or set locale. Internally, Polyglot only uses locale for pluralization.
+  Polyglot.prototype.locale = function(newLocale) {
+    if (newLocale) this.currentLocale = newLocale;
+    return this.currentLocale;
+  };
+
+  // ### polyglot.extend(phrases)
+  //
+  // Use `extend` to tell Polyglot how to translate a given key.
+  //
+  //     polyglot.extend({
+  //       "hello": "Hello",
+  //       "hello_name": "Hello, %{name}"
+  //     });
+  //
+  // The key can be any string.  Feel free to call `extend` multiple times;
+  // it will override any phrases with the same key, but leave existing phrases
+  // untouched.
+  //
+  // It is also possible to pass nested phrase objects, which get flattened
+  // into an object with the nested keys concatenated using dot notation.
+  //
+  //     polyglot.extend({
+  //       "nav": {
+  //         "hello": "Hello",
+  //         "hello_name": "Hello, %{name}",
+  //         "sidebar": {
+  //           "welcome": "Welcome"
+  //         }
+  //       }
+  //     });
+  //
+  //     console.log(polyglot.phrases);
+  //     // {
+  //     //   'nav.hello': 'Hello',
+  //     //   'nav.hello_name': 'Hello, %{name}',
+  //     //   'nav.sidebar.welcome': 'Welcome'
+  //     // }
+  //
+  // `extend` accepts an optional second argument, `prefix`, which can be used
+  // to prefix every key in the phrases object with some string, using dot
+  // notation.
+  //
+  //     polyglot.extend({
+  //       "hello": "Hello",
+  //       "hello_name": "Hello, %{name}"
+  //     }, "nav");
+  //
+  //     console.log(polyglot.phrases);
+  //     // {
+  //     //   'nav.hello': 'Hello',
+  //     //   'nav.hello_name': 'Hello, %{name}'
+  //     // }
+  //
+  // This feature is used internally to support nested phrase objects.
+  Polyglot.prototype.extend = function(morePhrases, prefix) {
+    var phrase;
+
+    for (var key in morePhrases) {
+      if (morePhrases.hasOwnProperty(key)) {
+        phrase = morePhrases[key];
+        if (prefix) key = prefix + '.' + key;
+        if (typeof phrase === 'object') {
+          this.extend(phrase, key);
+        } else {
+          this.phrases[key] = phrase;
+        }
+      }
+    }
+  };
+
+  // ### polyglot.clear()
+  //
+  // Clears all phrases. Useful for special cases, such as freeing
+  // up memory if you have lots of phrases but no longer need to
+  // perform any translation. Also used internally by `replace`.
+  Polyglot.prototype.clear = function() {
+    this.phrases = {};
+  };
+
+  // ### polyglot.replace(phrases)
+  //
+  // Completely replace the existing phrases with a new set of phrases.
+  // Normally, just use `extend` to add more phrases, but under certain
+  // circumstances, you may want to make sure no old phrases are lying around.
+  Polyglot.prototype.replace = function(newPhrases) {
+    this.clear();
+    this.extend(newPhrases);
+  };
+
+
+  // ### polyglot.t(key, options)
+  //
+  // The most-used method. Provide a key, and `t` will return the
+  // phrase.
+  //
+  //     polyglot.t("hello");
+  //     => "Hello"
+  //
+  // The phrase value is provided first by a call to `polyglot.extend()` or
+  // `polyglot.replace()`.
+  //
+  // Pass in an object as the second argument to perform interpolation.
+  //
+  //     polyglot.t("hello_name", {name: "Spike"});
+  //     => "Hello, Spike"
+  //
+  // If you like, you can provide a default value in case the phrase is missing.
+  // Use the special option key "_" to specify a default.
+  //
+  //     polyglot.t("i_like_to_write_in_language", {
+  //       _: "I like to write in %{language}.",
+  //       language: "JavaScript"
+  //     });
+  //     => "I like to write in JavaScript."
+  //
+  Polyglot.prototype.t = function(key, options) {
+    var result;
+    options = options == null ? {} : options;
+    // allow number as a pluralization shortcut
+    if (typeof options === 'number') {
+      options = {smart_count: options};
+    }
+    var phrase = this.phrases[key] || options._ || (this.allowMissing ? key : '');
+    if (phrase === '') {
+      this.warn('Missing translation for key: "'+key+'"');
+      result = key;
+    } else {
+      options = clone(options);
+      result = choosePluralForm(phrase, this.currentLocale, options.smart_count);
+      result = interpolate(result, options);
+    }
+    return result;
+  };
+
+
+  // #### Pluralization methods
+  // The string that separates the different phrase possibilities.
+  var delimeter = '||||';
+
+  // Mapping from pluralization group plural logic.
+  var pluralTypes = {
+    chinese:   function(n) { return 0; },
+    german:    function(n) { return n !== 1 ? 1 : 0; },
+    french:    function(n) { return n > 1 ? 1 : 0; },
+    russian:   function(n) { return n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; },
+    czech:     function(n) { return (n === 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2; },
+    polish:    function(n) { return (n === 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2); },
+    icelandic: function(n) { return (n % 10 !== 1 || n % 100 === 11) ? 1 : 0; }
+  };
+
+  // Mapping from pluralization group to individual locales.
+  var pluralTypeToLanguages = {
+    chinese:   ['fa', 'id', 'ja', 'ko', 'lo', 'ms', 'th', 'tr', 'zh'],
+    german:    ['da', 'de', 'en', 'es', 'fi', 'el', 'he', 'hu', 'it', 'nl', 'no', 'pt', 'sv'],
+    french:    ['fr', 'tl', 'pt-br'],
+    russian:   ['hr', 'ru'],
+    czech:     ['cs'],
+    polish:    ['pl'],
+    icelandic: ['is']
+  };
+
+  function langToTypeMap(mapping) {
+    var type, langs, l, ret = {};
+    for (type in mapping) {
+      if (mapping.hasOwnProperty(type)) {
+        langs = mapping[type];
+        for (l in langs) {
+          ret[langs[l]] = type;
+        }
+      }
+    }
+    return ret;
+  }
+
+  // Trim a string.
+  function trim(str){
+    var trimRe = /^\s+|\s+$/g;
+    return str.replace(trimRe, '');
+  }
+
+  // Based on a phrase text that contains `n` plural forms separated
+  // by `delimeter`, a `locale`, and a `count`, choose the correct
+  // plural form, or none if `count` is `null`.
+  function choosePluralForm(text, locale, count){
+    var ret, texts, chosenText;
+    if (count != null && text) {
+      texts = text.split(delimeter);
+      chosenText = texts[pluralTypeIndex(locale, count)] || texts[0];
+      ret = trim(chosenText);
+    } else {
+      ret = text;
+    }
+    return ret;
+  }
+
+  function pluralTypeName(locale) {
+    var langToPluralType = langToTypeMap(pluralTypeToLanguages);
+    return langToPluralType[locale] || langToPluralType.en;
+  }
+
+  function pluralTypeIndex(locale, count) {
+    return pluralTypes[pluralTypeName(locale)](count);
+  }
+
+  // ### interpolate
+  //
+  // Does the dirty work. Creates a `RegExp` object for each
+  // interpolation placeholder.
+  function interpolate(phrase, options) {
+    for (var arg in options) {
+      if (arg !== '_' && options.hasOwnProperty(arg)) {
+        // We create a new `RegExp` each time instead of using a more-efficient
+        // string replace so that the same argument can be replaced multiple times
+        // in the same phrase.
+        phrase = phrase.replace(new RegExp('%\\{'+arg+'\\}', 'g'), options[arg]);
+      }
+    }
+    return phrase;
+  }
+
+  // ### warn
+  //
+  // Provides a warning in the console if a phrase key is missing.
+  function warn(message) {
+    root.console && root.console.warn && root.console.warn('WARNING: ' + message);
+  }
+
+  // ### clone
+  //
+  // Clone an object.
+  function clone(source) {
+    var ret = {};
+    for (var prop in source) {
+      ret[prop] = source[prop];
+    }
+    return ret;
+  }
+
+
+  // Export for Node, attach to `window` for browser.
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Polyglot;
+  } else {
+    root.Polyglot = Polyglot;
+  }
+
+}(this);
 
 },{}],"rendr-handlebars":[function(require,module,exports){
 module.exports=require('k+WLb7');
@@ -959,7 +1246,7 @@ module.exports = function(options){
   return localExports;
 }
 
-},{"./shared/helpers":80,"./shared/templateFinder":81,"handlebars":79}],65:[function(require,module,exports){
+},{"./shared/helpers":84,"./shared/templateFinder":85,"handlebars":83}],69:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -997,7 +1284,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":66,"./handlebars/compiler/ast":68,"./handlebars/compiler/base":69,"./handlebars/compiler/compiler":70,"./handlebars/compiler/javascript-compiler":71}],66:[function(require,module,exports){
+},{"./handlebars.runtime":70,"./handlebars/compiler/ast":72,"./handlebars/compiler/base":73,"./handlebars/compiler/compiler":74,"./handlebars/compiler/javascript-compiler":75}],70:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -1030,7 +1317,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":67,"./handlebars/exception":75,"./handlebars/runtime":76,"./handlebars/safe-string":77,"./handlebars/utils":78}],67:[function(require,module,exports){
+},{"./handlebars/base":71,"./handlebars/exception":79,"./handlebars/runtime":80,"./handlebars/safe-string":81,"./handlebars/utils":82}],71:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -1211,7 +1498,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":75,"./utils":78}],68:[function(require,module,exports){
+},{"./exception":79,"./utils":82}],72:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -1439,7 +1726,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":75}],69:[function(require,module,exports){
+},{"../exception":79}],73:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -1455,7 +1742,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":68,"./parser":72}],70:[function(require,module,exports){
+},{"./ast":72,"./parser":76}],74:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -1925,7 +2212,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":75}],71:[function(require,module,exports){
+},{"../exception":79}],75:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -2868,7 +3155,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":67,"../exception":75}],72:[function(require,module,exports){
+},{"../base":71,"../exception":79}],76:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -3359,7 +3646,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],73:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -3498,7 +3785,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":74}],74:[function(require,module,exports){
+},{"./visitor":78}],78:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -3511,7 +3798,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],75:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -3540,7 +3827,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],76:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -3678,7 +3965,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":67,"./exception":75,"./utils":78}],77:[function(require,module,exports){
+},{"./base":71,"./exception":79,"./utils":82}],81:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -3690,7 +3977,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],78:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -3767,7 +4054,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":77}],79:[function(require,module,exports){
+},{"./safe-string":81}],83:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -3794,7 +4081,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":65,"../dist/cjs/handlebars/compiler/printer":73,"../dist/cjs/handlebars/compiler/visitor":74,"fs":61}],80:[function(require,module,exports){
+},{"../dist/cjs/handlebars":69,"../dist/cjs/handlebars/compiler/printer":77,"../dist/cjs/handlebars/compiler/visitor":78,"fs":63}],84:[function(require,module,exports){
 var _ = require('underscore'),
   isServer = typeof window === 'undefined';
 
@@ -3923,7 +4210,7 @@ function getProperty(key, context, options) {
   return context[key] || (options.data || {})[key];
 }
 
-},{"rendr/shared/base/view":90,"underscore":97}],81:[function(require,module,exports){
+},{"rendr/shared/base/view":94,"underscore":101}],85:[function(require,module,exports){
 var cachedTemplates = {};
 
 module.exports = function(Handlebars) {
@@ -3988,7 +4275,7 @@ module.exports = function(Handlebars) {
   }
 };
 
-},{}],82:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     BaseView = require('../shared/base/view'),
@@ -4052,7 +4339,7 @@ module.exports = BaseView.extend({
 
 });
 
-},{"../shared/base/view":90,"backbone":85,"jquery":"EoZ3ID","underscore":97}],83:[function(require,module,exports){
+},{"../shared/base/view":94,"backbone":89,"jquery":"EoZ3ID","underscore":101}],87:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -4353,7 +4640,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
   });
 };
 
-},{"../shared/base/router":89,"../shared/base/view":90,"backbone":85,"jquery":"EoZ3ID","underscore":97}],84:[function(require,module,exports){
+},{"../shared/base/router":93,"../shared/base/view":94,"backbone":89,"jquery":"EoZ3ID","underscore":101}],88:[function(require,module,exports){
 (function (process){
 /*global setImmediate: false, setTimeout: false, console: false */
 (function () {
@@ -5315,7 +5602,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
 }());
 
 }).call(this,require("JkpR2F"))
-},{"JkpR2F":62}],85:[function(require,module,exports){
+},{"JkpR2F":64}],89:[function(require,module,exports){
 //     Backbone.js 1.0.0
 
 //     (c) 2010-2013 Jeremy Ashkenas, DocumentCloud Inc.
@@ -6888,7 +7175,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
 
 }).call(this);
 
-},{"underscore":97}],86:[function(require,module,exports){
+},{"underscore":101}],90:[function(require,module,exports){
 /**
  * This is the app instance that is shared between client and server.
  * The client also subclasses it for client-specific stuff.
@@ -7001,7 +7288,7 @@ module.exports = Backbone.Model.extend({
   }
 });
 
-},{"../client/app_view":82,"./fetcher":91,"./modelUtils":92,"app/router":"86KJBY","backbone":85,"jquery":"EoZ3ID"}],87:[function(require,module,exports){
+},{"../client/app_view":86,"./fetcher":95,"./modelUtils":96,"app/router":"86KJBY","backbone":89,"jquery":"EoZ3ID"}],91:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     syncer = require('../syncer'),
@@ -7128,7 +7415,7 @@ _.extend(BaseCollection.prototype, syncer);
 
 module.exports = BaseCollection;
 
-},{"../syncer":96,"./model":88,"backbone":85,"jquery":"EoZ3ID","underscore":97}],88:[function(require,module,exports){
+},{"../syncer":100,"./model":92,"backbone":89,"jquery":"EoZ3ID","underscore":101}],92:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     syncer = require('../syncer'),
@@ -7183,7 +7470,7 @@ _.extend(BaseModel.prototype, syncer);
 
 module.exports = BaseModel;
 
-},{"../syncer":96,"backbone":85,"jquery":"EoZ3ID","underscore":97}],89:[function(require,module,exports){
+},{"../syncer":100,"backbone":89,"jquery":"EoZ3ID","underscore":101}],93:[function(require,module,exports){
 var _ = require('underscore'),
   Backbone = require('backbone'),
   isServer = (typeof window === 'undefined'),
@@ -7382,7 +7669,7 @@ module.exports.setAMDEnvironment = function(flag) {
   isAMDEnvironment = flag;
 };
 
-},{"backbone":85,"jquery":"EoZ3ID","underscore":97}],90:[function(require,module,exports){
+},{"backbone":89,"jquery":"EoZ3ID","underscore":101}],94:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -7916,7 +8203,7 @@ if (typeof window === 'undefined') {
   BaseView.prototype.delegateEvents = noop;
 }
 
-},{"async":84,"backbone":85,"jquery":"EoZ3ID","underscore":97}],91:[function(require,module,exports){
+},{"async":88,"backbone":89,"jquery":"EoZ3ID","underscore":101}],95:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     async = require('async'),
@@ -8315,7 +8602,7 @@ Fetcher.prototype.fetch = function(fetchSpecs, options, callback) {
 // Mixin Backbone.Events for events that work in client & server.
 _.extend(Fetcher.prototype, Backbone.Events);
 
-},{"./store/collection_store":93,"./store/model_store":95,"async":84,"backbone":85,"jquery":"EoZ3ID","underscore":97}],92:[function(require,module,exports){
+},{"./store/collection_store":97,"./store/model_store":99,"async":88,"backbone":89,"jquery":"EoZ3ID","underscore":101}],96:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -8455,7 +8742,7 @@ ModelUtils.prototype.modelIdAttribute = function(modelName, callback) {
   });
 };
 
-},{"./base/collection":87,"./base/model":88}],93:[function(require,module,exports){
+},{"./base/collection":91,"./base/model":92}],97:[function(require,module,exports){
 var _ = require('underscore'),
     Super = require('./memory_store');
 
@@ -8529,7 +8816,7 @@ function sortParams(params) {
   return sorted;
 }
 
-},{"./memory_store":94,"underscore":97}],94:[function(require,module,exports){
+},{"./memory_store":98,"underscore":101}],98:[function(require,module,exports){
 module.exports = MemoryStore;
 
 function MemoryStore(options) {
@@ -8607,7 +8894,7 @@ MemoryStore.prototype._formatKey = function(key) {
   return this._versionKey(key);
 };
 
-},{}],95:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 var _ = require('underscore'),
     Super = require('./memory_store');
 
@@ -8706,7 +8993,7 @@ ModelStore.prototype._getModelStoreKey = function(modelName, id) {
   return this._keyPrefix(modelName) + ":" + id;
 }
 
-},{"./memory_store":94,"underscore":97}],96:[function(require,module,exports){
+},{"./memory_store":98,"underscore":101}],100:[function(require,module,exports){
 /**
  * `syncer` is a collection of instance methods that are mixed into the prototypes
  * of `BaseModel` and `BaseCollection`. The purpose is to encapsulate shared logic
@@ -8940,7 +9227,7 @@ syncer.interpolateParams = function interpolateParams(model, url, params) {
   return url;
 };
 
-},{"backbone":85,"jquery":"EoZ3ID","underscore":97}],97:[function(require,module,exports){
+},{"backbone":89,"jquery":"EoZ3ID","underscore":101}],101:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -10218,4 +10505,4 @@ syncer.interpolateParams = function interpolateParams(model, url, params) {
 
 }).call(this);
 
-},{}]},{},["LentoW","rCVOCK","clZNru","IELbLo","dbheZC","n5JPJf","qk854H","SZ6WoB","bX80+R","P/YCR8","Cu+0Ho","qnrstJ","Lkugus","WQcoKQ","pLMDjU","LFobQP","86KJBY","bbl2t2","rFRVhs","5syn3K","6kWBjj","to5G6a","T6DCWR","u40/HK","67Yhfb","ARwkjH","/O4NWC","GCGXSt","zPzHVa"])
+},{}]},{},["LentoW","rCVOCK","clZNru","IELbLo","dbheZC","RW+RNx","n5JPJf","qk854H","SZ6WoB","bX80+R","P/YCR8","Cu+0Ho","qnrstJ","Lkugus","WQcoKQ","pLMDjU","LFobQP","86KJBY","bbl2t2","rFRVhs","5syn3K","6kWBjj","to5G6a","T6DCWR","u40/HK","67Yhfb","ARwkjH","/O4NWC","GCGXSt","zPzHVa"])

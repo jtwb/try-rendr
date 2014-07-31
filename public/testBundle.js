@@ -58,14 +58,14 @@ module.exports = BaseApp.extend({
 
 });
 
-},{"./lib/handlebarsHelpers":"Cu+0Ho","./views/app_view":"5syn3K","rendr/shared/app":119}],"app/app":[function(require,module,exports){
+},{"./lib/handlebarsHelpers":"Cu+0Ho","./views/app_view":"5syn3K","rendr/shared/app":123}],"app/app":[function(require,module,exports){
 module.exports=require('LentoW');
 },{}],"rCVOCK":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/collection');
 
 module.exports = RendrBase.extend({});
 
-},{"rendr/shared/base/collection":120}],"app/collections/base":[function(require,module,exports){
+},{"rendr/shared/base/collection":124}],"app/collections/base":[function(require,module,exports){
 module.exports=require('rCVOCK');
 },{}],"app/collections/repos":[function(require,module,exports){
 module.exports=require('clZNru');
@@ -110,6 +110,14 @@ module.exports.id = 'Wishlists';
 
 },{"../models/wishlist":"LFobQP","./base":"rCVOCK"}],"app/collections/wishlists":[function(require,module,exports){
 module.exports=require('dbheZC');
+},{}],"app/config/i18n":[function(require,module,exports){
+module.exports=require('RW+RNx');
+},{}],"RW+RNx":[function(require,module,exports){
+module.exports = {
+  language: 'es-MX',
+  locale: 'es'
+};
+
 },{}],"n5JPJf":[function(require,module,exports){
 module.exports = {
   index: function(params, callback) {
@@ -190,7 +198,7 @@ module.exports = {
   }
 };
 
-},{"underscore":130}],"bX80+R":[function(require,module,exports){
+},{"underscore":134}],"bX80+R":[function(require,module,exports){
 module.exports = {
   index: function(params, callback) {
     this.app.set('title', 'My Wishlists');
@@ -223,22 +231,31 @@ module.exports = {
 
 },{}],"app/controllers/wishlists_controller":[function(require,module,exports){
 module.exports=require('bX80+R');
+},{}],"app/i18n/all":[function(require,module,exports){
+module.exports=require('P/YCR8');
 },{}],"P/YCR8":[function(require,module,exports){
 module.exports = {
-  'en': {
+  'en-US': {
     'My Wishlists': "My Wishlists",
-    'item': 'item',
-    'items': 'items',
+    "num_items": "%{smart_count} item |||| %{smart_count} items",
     'default': 'default'
+  },
+  'es-MX': {
+    'My Wishlists': "Mis listas de regalo",
+    "num_items": "%{smart_count} artículo |||| %{smart_count} artículos",
+    'default': 'defecto'
   }
 };
 
-},{}],"app/i18n/all":[function(require,module,exports){
-module.exports=require('P/YCR8');
-},{}],"app/lib/handlebarsHelpers":[function(require,module,exports){
-module.exports=require('Cu+0Ho');
 },{}],"Cu+0Ho":[function(require,module,exports){
-var lang = require('../i18n/all.js')
+var Polyglot = require('node-polyglot');
+var lang = require('../i18n/all.js');
+var env = require('../config/i18n.js');
+
+var polyglotBundle = new Polyglot({
+  locale: env.locale,
+  phrases: lang[env.language]
+});
 
 /**
  * We inject the Handlebars instance, because this module doesn't know where
@@ -249,22 +266,20 @@ module.exports = function(Handlebars) {
     copyright: function(year) {
       return new Handlebars.SafeString("&copy;" + year);
     },
-    localize: function(term) {
-      var language = 'en';
-      var bundle = lang[language];
-      return term in bundle ? bundle[term] : term;
-    }
+    t: polyglotBundle.t.bind(polyglotBundle)
   };
 };
 
-},{"../i18n/all.js":"P/YCR8"}],"app/models/base":[function(require,module,exports){
+},{"../config/i18n.js":"RW+RNx","../i18n/all.js":"P/YCR8","node-polyglot":98}],"app/lib/handlebarsHelpers":[function(require,module,exports){
+module.exports=require('Cu+0Ho');
+},{}],"app/models/base":[function(require,module,exports){
 module.exports=require('qnrstJ');
 },{}],"qnrstJ":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/model');
 
 module.exports = RendrBase.extend({});
 
-},{"rendr/shared/base/model":121}],"Lkugus":[function(require,module,exports){
+},{"rendr/shared/base/model":125}],"Lkugus":[function(require,module,exports){
 var Base = require('./base');
 
 module.exports = Base.extend({
@@ -332,7 +347,7 @@ Router.prototype.trackImpression = function() {
   }
 };
 
-},{"rendr/client/router":116}],"app/router":[function(require,module,exports){
+},{"rendr/client/router":120}],"app/router":[function(require,module,exports){
 module.exports=require('86KJBY');
 },{}],"app/routes":[function(require,module,exports){
 module.exports=require('bbl2t2');
@@ -609,12 +624,8 @@ function program1(depth0,data) {
     + "</a>\n    (";
   stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  if (stack1 = helpers.count_all_active_items) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.count_all_active_items; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + " ";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, depth0.count_inflected_label, options) : helperMissing.call(depth0, "localize", depth0.count_inflected_label, options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "num_items", depth0.count_all_active_items, options) : helperMissing.call(depth0, "t", "num_items", depth0.count_all_active_items, options)))
     + ")\n  </li>\n";
   return buffer;
   }
@@ -622,14 +633,14 @@ function program2(depth0,data) {
   
   var buffer = "", stack1, options;
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "localize", "default", options)))
-    + " ";
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "t", "default", options)))
+    + ", ";
   return buffer;
   }
 
   buffer += "<h1>";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "localize", "My Wishlists", options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || depth0['t']),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "t", "My Wishlists", options)))
     + "</h1>\n\n<ul>\n";
   stack2 = helpers.each.call(depth0, depth0.models, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
@@ -693,7 +704,7 @@ module.exports = BaseAppView.extend({
   }
 });
 
-},{"jquery":"EoZ3ID","rendr/client/app_view":115}],"app/views/app_view":[function(require,module,exports){
+},{"jquery":"EoZ3ID","rendr/client/app_view":119}],"app/views/app_view":[function(require,module,exports){
 module.exports=require('5syn3K');
 },{}],"6kWBjj":[function(require,module,exports){
 var RendrView = require('rendr/shared/base/view');
@@ -702,7 +713,7 @@ var RendrView = require('rendr/shared/base/view');
 // application's views.
 module.exports = RendrView.extend({});
 
-},{"rendr/shared/base/view":123}],"app/views/base":[function(require,module,exports){
+},{"rendr/shared/base/view":127}],"app/views/base":[function(require,module,exports){
 module.exports=require('6kWBjj');
 },{}],"app/views/home/index":[function(require,module,exports){
 module.exports=require('to5G6a');
@@ -782,16 +793,7 @@ module.exports=require('GCGXSt');
 var BaseView = require('../base');
 
 module.exports = BaseView.extend({
-  className: 'wishlists',
-  getTemplateData: function() {
-    var data = BaseView.prototype.getTemplateData.call(this);
-    data.models.forEach(function(model) {
-      var count = model.count_all_active_items;
-      model.count_inflected_label =
-        count > 1 ? 'items' : 'item';
-    });
-    return data;
-  }
+  className: 'wishlists'
 });
 module.exports.id = 'wishlists/index';
 
@@ -801,12 +803,7 @@ module.exports=require('zPzHVa');
 var BaseView = require('../base');
 
 module.exports = BaseView.extend({
-  className: 'wishlist-detail',
-  getTemplateData: function() {
-    var data = BaseView.prototype.getTemplateData.call(this);
-    console.log(data);
-    return data;
-  }
+  className: 'wishlist-detail'
 });
 module.exports.id = 'wishlists/show';
 
@@ -825,10 +822,10 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"jquery":[function(require,module,exports){
 module.exports=require('EoZ3ID');
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = require('./lib/chai');
 
-},{"./lib/chai":62}],62:[function(require,module,exports){
+},{"./lib/chai":64}],64:[function(require,module,exports){
 /*!
  * chai
  * Copyright(c) 2011-2013 Jake Luer <jake@alogicalparadox.com>
@@ -910,7 +907,7 @@ exports.use(should);
 var assert = require('./chai/interface/assert');
 exports.use(assert);
 
-},{"./chai/assertion":63,"./chai/core/assertions":64,"./chai/interface/assert":65,"./chai/interface/expect":66,"./chai/interface/should":67,"./chai/utils":78,"assertion-error":86}],63:[function(require,module,exports){
+},{"./chai/assertion":65,"./chai/core/assertions":66,"./chai/interface/assert":67,"./chai/interface/expect":68,"./chai/interface/should":69,"./chai/utils":80,"assertion-error":88}],65:[function(require,module,exports){
 /*!
  * chai
  * http://chaijs.com
@@ -1042,7 +1039,7 @@ module.exports = function (_chai, util) {
   });
 };
 
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 /*!
  * chai
  * http://chaijs.com
@@ -2314,7 +2311,7 @@ module.exports = function (chai, _) {
   });
 };
 
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 /*!
  * chai
  * Copyright(c) 2011-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3396,7 +3393,7 @@ module.exports = function (chai, util) {
   ('Throw', 'throws');
 };
 
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 /*!
  * chai
  * Copyright(c) 2011-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3410,7 +3407,7 @@ module.exports = function (chai, util) {
 };
 
 
-},{}],67:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /*!
  * chai
  * Copyright(c) 2011-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3488,7 +3485,7 @@ module.exports = function (chai, util) {
   chai.Should = loadShould;
 };
 
-},{}],68:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 /*!
  * Chai - addChainingMethod utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3584,7 +3581,7 @@ module.exports = function (ctx, name, method, chainingBehavior) {
   });
 };
 
-},{"./transferFlags":84}],69:[function(require,module,exports){
+},{"./transferFlags":86}],71:[function(require,module,exports){
 /*!
  * Chai - addMethod utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3623,7 +3620,7 @@ module.exports = function (ctx, name, method) {
   };
 };
 
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /*!
  * Chai - addProperty utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3665,7 +3662,7 @@ module.exports = function (ctx, name, getter) {
   });
 };
 
-},{}],71:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 /*!
  * Chai - flag utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3699,7 +3696,7 @@ module.exports = function (obj, key, value) {
   }
 };
 
-},{}],72:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /*!
  * Chai - getActual utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3720,7 +3717,7 @@ module.exports = function (obj, args) {
   return 'undefined' !== typeof actual ? actual : obj._obj;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /*!
  * Chai - getEnumerableProperties utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3747,7 +3744,7 @@ module.exports = function getEnumerableProperties(object) {
   return result;
 };
 
-},{}],74:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /*!
  * Chai - message composition utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3798,7 +3795,7 @@ module.exports = function (obj, args) {
   return flagMsg ? flagMsg + ': ' + msg : msg;
 };
 
-},{"./flag":71,"./getActual":72,"./inspect":79,"./objDisplay":80}],75:[function(require,module,exports){
+},{"./flag":73,"./getActual":74,"./inspect":81,"./objDisplay":82}],77:[function(require,module,exports){
 /*!
  * Chai - getName utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3820,7 +3817,7 @@ module.exports = function (func) {
   return match && match[1] ? match[1] : "";
 };
 
-},{}],76:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 /*!
  * Chai - getPathValue utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3924,7 +3921,7 @@ function _getPathValue (parsed, obj) {
   return res;
 };
 
-},{}],77:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /*!
  * Chai - getProperties utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -3961,7 +3958,7 @@ module.exports = function getProperties(object) {
   return result;
 };
 
-},{}],78:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 /*!
  * chai
  * Copyright(c) 2011 Jake Luer <jake@alogicalparadox.com>
@@ -4071,7 +4068,7 @@ exports.overwriteMethod = require('./overwriteMethod');
 exports.addChainableMethod = require('./addChainableMethod');
 
 
-},{"./addChainableMethod":68,"./addMethod":69,"./addProperty":70,"./flag":71,"./getActual":72,"./getMessage":74,"./getName":75,"./getPathValue":76,"./inspect":79,"./objDisplay":80,"./overwriteMethod":81,"./overwriteProperty":82,"./test":83,"./transferFlags":84,"./type":85,"deep-eql":87}],79:[function(require,module,exports){
+},{"./addChainableMethod":70,"./addMethod":71,"./addProperty":72,"./flag":73,"./getActual":74,"./getMessage":76,"./getName":77,"./getPathValue":78,"./inspect":81,"./objDisplay":82,"./overwriteMethod":83,"./overwriteProperty":84,"./test":85,"./transferFlags":86,"./type":87,"deep-eql":89}],81:[function(require,module,exports){
 // This is (almost) directly from Node.js utils
 // https://github.com/joyent/node/blob/f8c335d0caf47f16d31413f89aa28eda3878e3aa/lib/util.js
 
@@ -4393,7 +4390,7 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-},{"./getEnumerableProperties":73,"./getName":75,"./getProperties":77}],80:[function(require,module,exports){
+},{"./getEnumerableProperties":75,"./getName":77,"./getProperties":79}],82:[function(require,module,exports){
 /*!
  * Chai - flag utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -4443,7 +4440,7 @@ module.exports = function (obj) {
   }
 };
 
-},{"./inspect":79}],81:[function(require,module,exports){
+},{"./inspect":81}],83:[function(require,module,exports){
 /*!
  * Chai - overwriteMethod utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -4496,7 +4493,7 @@ module.exports = function (ctx, name, method) {
   }
 };
 
-},{}],82:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 /*!
  * Chai - overwriteProperty utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -4552,7 +4549,7 @@ module.exports = function (ctx, name, getter) {
   });
 };
 
-},{}],83:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 /*!
  * Chai - test utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -4580,7 +4577,7 @@ module.exports = function (obj, args) {
   return negate ? !expr : expr;
 };
 
-},{"./flag":71}],84:[function(require,module,exports){
+},{"./flag":73}],86:[function(require,module,exports){
 /*!
  * Chai - transferFlags utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -4626,7 +4623,7 @@ module.exports = function (assertion, object, includeAll) {
   }
 };
 
-},{}],85:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 /*!
  * Chai - type utility
  * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
@@ -4673,7 +4670,7 @@ module.exports = function (obj) {
   return typeof obj;
 };
 
-},{}],86:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 /*!
  * assertion-error
  * Copyright(c) 2013 Jake Luer <jake@qualiancy.com>
@@ -4785,10 +4782,10 @@ AssertionError.prototype.toJSON = function (stack) {
   return props;
 };
 
-},{}],87:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports = require('./lib/eql');
 
-},{"./lib/eql":88}],88:[function(require,module,exports){
+},{"./lib/eql":90}],90:[function(require,module,exports){
 /*!
  * deep-eql
  * Copyright(c) 2013 Jake Luer <jake@alogicalparadox.com>
@@ -5047,10 +5044,10 @@ function objectEqual(a, b, m) {
   return true;
 }
 
-},{"buffer":92,"type-detect":89}],89:[function(require,module,exports){
+},{"buffer":94,"type-detect":91}],91:[function(require,module,exports){
 module.exports = require('./lib/type');
 
-},{"./lib/type":90}],90:[function(require,module,exports){
+},{"./lib/type":92}],92:[function(require,module,exports){
 /*!
  * type-detect
  * Copyright(c) 2013 jake luer <jake@alogicalparadox.com>
@@ -5194,9 +5191,9 @@ Library.prototype.test = function (obj, type) {
   }
 };
 
-},{}],91:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 
-},{}],92:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -6307,7 +6304,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":93,"ieee754":94}],93:[function(require,module,exports){
+},{"base64-js":95,"ieee754":96}],95:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -6429,7 +6426,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],94:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -6515,7 +6512,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],95:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -6579,6 +6576,296 @@ process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
+
+},{}],98:[function(require,module,exports){
+// Added for convenience in the Node environment.
+// The meat and potatoes exist in ./lib/polyglot.js.
+module.exports = require('./lib/polyglot');
+
+},{"./lib/polyglot":99}],99:[function(require,module,exports){
+//     (c) 2012 Airbnb, Inc.
+//
+//     polyglot.js may be freely distributed under the terms of the BSD
+//     license. For all licensing information, details, and documention:
+//     http://airbnb.github.com/polyglot.js
+//
+//
+// Polyglot.js is an I18n helper library written in JavaScript, made to
+// work both in the browser and in Node. It provides a simple solution for
+// interpolation and pluralization, based off of Airbnb's
+// experience adding I18n functionality to its Backbone.js and Node apps.
+//
+// Polylglot is agnostic to your translation backend. It doesn't perform any
+// translation; it simply gives you a way to manage translated phrases from
+// your client- or server-side JavaScript application.
+//
+
+!function(root) {
+  'use strict';
+
+  // ### Polyglot class constructor
+  function Polyglot(options) {
+    options = options || {};
+    this.phrases = {};
+    this.extend(options.phrases || {});
+    this.currentLocale = options.locale || 'en';
+    this.allowMissing = !!options.allowMissing;
+    this.warn = options.warn || warn;
+  }
+
+  // ### Version
+  Polyglot.VERSION = '0.4.1';
+
+  // ### polyglot.locale([locale])
+  //
+  // Get or set locale. Internally, Polyglot only uses locale for pluralization.
+  Polyglot.prototype.locale = function(newLocale) {
+    if (newLocale) this.currentLocale = newLocale;
+    return this.currentLocale;
+  };
+
+  // ### polyglot.extend(phrases)
+  //
+  // Use `extend` to tell Polyglot how to translate a given key.
+  //
+  //     polyglot.extend({
+  //       "hello": "Hello",
+  //       "hello_name": "Hello, %{name}"
+  //     });
+  //
+  // The key can be any string.  Feel free to call `extend` multiple times;
+  // it will override any phrases with the same key, but leave existing phrases
+  // untouched.
+  //
+  // It is also possible to pass nested phrase objects, which get flattened
+  // into an object with the nested keys concatenated using dot notation.
+  //
+  //     polyglot.extend({
+  //       "nav": {
+  //         "hello": "Hello",
+  //         "hello_name": "Hello, %{name}",
+  //         "sidebar": {
+  //           "welcome": "Welcome"
+  //         }
+  //       }
+  //     });
+  //
+  //     console.log(polyglot.phrases);
+  //     // {
+  //     //   'nav.hello': 'Hello',
+  //     //   'nav.hello_name': 'Hello, %{name}',
+  //     //   'nav.sidebar.welcome': 'Welcome'
+  //     // }
+  //
+  // `extend` accepts an optional second argument, `prefix`, which can be used
+  // to prefix every key in the phrases object with some string, using dot
+  // notation.
+  //
+  //     polyglot.extend({
+  //       "hello": "Hello",
+  //       "hello_name": "Hello, %{name}"
+  //     }, "nav");
+  //
+  //     console.log(polyglot.phrases);
+  //     // {
+  //     //   'nav.hello': 'Hello',
+  //     //   'nav.hello_name': 'Hello, %{name}'
+  //     // }
+  //
+  // This feature is used internally to support nested phrase objects.
+  Polyglot.prototype.extend = function(morePhrases, prefix) {
+    var phrase;
+
+    for (var key in morePhrases) {
+      if (morePhrases.hasOwnProperty(key)) {
+        phrase = morePhrases[key];
+        if (prefix) key = prefix + '.' + key;
+        if (typeof phrase === 'object') {
+          this.extend(phrase, key);
+        } else {
+          this.phrases[key] = phrase;
+        }
+      }
+    }
+  };
+
+  // ### polyglot.clear()
+  //
+  // Clears all phrases. Useful for special cases, such as freeing
+  // up memory if you have lots of phrases but no longer need to
+  // perform any translation. Also used internally by `replace`.
+  Polyglot.prototype.clear = function() {
+    this.phrases = {};
+  };
+
+  // ### polyglot.replace(phrases)
+  //
+  // Completely replace the existing phrases with a new set of phrases.
+  // Normally, just use `extend` to add more phrases, but under certain
+  // circumstances, you may want to make sure no old phrases are lying around.
+  Polyglot.prototype.replace = function(newPhrases) {
+    this.clear();
+    this.extend(newPhrases);
+  };
+
+
+  // ### polyglot.t(key, options)
+  //
+  // The most-used method. Provide a key, and `t` will return the
+  // phrase.
+  //
+  //     polyglot.t("hello");
+  //     => "Hello"
+  //
+  // The phrase value is provided first by a call to `polyglot.extend()` or
+  // `polyglot.replace()`.
+  //
+  // Pass in an object as the second argument to perform interpolation.
+  //
+  //     polyglot.t("hello_name", {name: "Spike"});
+  //     => "Hello, Spike"
+  //
+  // If you like, you can provide a default value in case the phrase is missing.
+  // Use the special option key "_" to specify a default.
+  //
+  //     polyglot.t("i_like_to_write_in_language", {
+  //       _: "I like to write in %{language}.",
+  //       language: "JavaScript"
+  //     });
+  //     => "I like to write in JavaScript."
+  //
+  Polyglot.prototype.t = function(key, options) {
+    var result;
+    options = options == null ? {} : options;
+    // allow number as a pluralization shortcut
+    if (typeof options === 'number') {
+      options = {smart_count: options};
+    }
+    var phrase = this.phrases[key] || options._ || (this.allowMissing ? key : '');
+    if (phrase === '') {
+      this.warn('Missing translation for key: "'+key+'"');
+      result = key;
+    } else {
+      options = clone(options);
+      result = choosePluralForm(phrase, this.currentLocale, options.smart_count);
+      result = interpolate(result, options);
+    }
+    return result;
+  };
+
+
+  // #### Pluralization methods
+  // The string that separates the different phrase possibilities.
+  var delimeter = '||||';
+
+  // Mapping from pluralization group plural logic.
+  var pluralTypes = {
+    chinese:   function(n) { return 0; },
+    german:    function(n) { return n !== 1 ? 1 : 0; },
+    french:    function(n) { return n > 1 ? 1 : 0; },
+    russian:   function(n) { return n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; },
+    czech:     function(n) { return (n === 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2; },
+    polish:    function(n) { return (n === 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2); },
+    icelandic: function(n) { return (n % 10 !== 1 || n % 100 === 11) ? 1 : 0; }
+  };
+
+  // Mapping from pluralization group to individual locales.
+  var pluralTypeToLanguages = {
+    chinese:   ['fa', 'id', 'ja', 'ko', 'lo', 'ms', 'th', 'tr', 'zh'],
+    german:    ['da', 'de', 'en', 'es', 'fi', 'el', 'he', 'hu', 'it', 'nl', 'no', 'pt', 'sv'],
+    french:    ['fr', 'tl', 'pt-br'],
+    russian:   ['hr', 'ru'],
+    czech:     ['cs'],
+    polish:    ['pl'],
+    icelandic: ['is']
+  };
+
+  function langToTypeMap(mapping) {
+    var type, langs, l, ret = {};
+    for (type in mapping) {
+      if (mapping.hasOwnProperty(type)) {
+        langs = mapping[type];
+        for (l in langs) {
+          ret[langs[l]] = type;
+        }
+      }
+    }
+    return ret;
+  }
+
+  // Trim a string.
+  function trim(str){
+    var trimRe = /^\s+|\s+$/g;
+    return str.replace(trimRe, '');
+  }
+
+  // Based on a phrase text that contains `n` plural forms separated
+  // by `delimeter`, a `locale`, and a `count`, choose the correct
+  // plural form, or none if `count` is `null`.
+  function choosePluralForm(text, locale, count){
+    var ret, texts, chosenText;
+    if (count != null && text) {
+      texts = text.split(delimeter);
+      chosenText = texts[pluralTypeIndex(locale, count)] || texts[0];
+      ret = trim(chosenText);
+    } else {
+      ret = text;
+    }
+    return ret;
+  }
+
+  function pluralTypeName(locale) {
+    var langToPluralType = langToTypeMap(pluralTypeToLanguages);
+    return langToPluralType[locale] || langToPluralType.en;
+  }
+
+  function pluralTypeIndex(locale, count) {
+    return pluralTypes[pluralTypeName(locale)](count);
+  }
+
+  // ### interpolate
+  //
+  // Does the dirty work. Creates a `RegExp` object for each
+  // interpolation placeholder.
+  function interpolate(phrase, options) {
+    for (var arg in options) {
+      if (arg !== '_' && options.hasOwnProperty(arg)) {
+        // We create a new `RegExp` each time instead of using a more-efficient
+        // string replace so that the same argument can be replaced multiple times
+        // in the same phrase.
+        phrase = phrase.replace(new RegExp('%\\{'+arg+'\\}', 'g'), options[arg]);
+      }
+    }
+    return phrase;
+  }
+
+  // ### warn
+  //
+  // Provides a warning in the console if a phrase key is missing.
+  function warn(message) {
+    root.console && root.console.warn && root.console.warn('WARNING: ' + message);
+  }
+
+  // ### clone
+  //
+  // Clone an object.
+  function clone(source) {
+    var ret = {};
+    for (var prop in source) {
+      ret[prop] = source[prop];
+    }
+    return ret;
+  }
+
+
+  // Export for Node, attach to `window` for browser.
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Polyglot;
+  } else {
+    root.Polyglot = Polyglot;
+  }
+
+}(this);
 
 },{}],"rendr-handlebars":[function(require,module,exports){
 module.exports=require('k+WLb7');
@@ -6647,7 +6934,7 @@ module.exports = function(options){
   return localExports;
 }
 
-},{"./shared/helpers":113,"./shared/templateFinder":114,"handlebars":112}],98:[function(require,module,exports){
+},{"./shared/helpers":117,"./shared/templateFinder":118,"handlebars":116}],102:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -6685,7 +6972,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":99,"./handlebars/compiler/ast":101,"./handlebars/compiler/base":102,"./handlebars/compiler/compiler":103,"./handlebars/compiler/javascript-compiler":104}],99:[function(require,module,exports){
+},{"./handlebars.runtime":103,"./handlebars/compiler/ast":105,"./handlebars/compiler/base":106,"./handlebars/compiler/compiler":107,"./handlebars/compiler/javascript-compiler":108}],103:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -6718,7 +7005,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":100,"./handlebars/exception":108,"./handlebars/runtime":109,"./handlebars/safe-string":110,"./handlebars/utils":111}],100:[function(require,module,exports){
+},{"./handlebars/base":104,"./handlebars/exception":112,"./handlebars/runtime":113,"./handlebars/safe-string":114,"./handlebars/utils":115}],104:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -6899,7 +7186,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":108,"./utils":111}],101:[function(require,module,exports){
+},{"./exception":112,"./utils":115}],105:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -7127,7 +7414,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":108}],102:[function(require,module,exports){
+},{"../exception":112}],106:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -7143,7 +7430,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":101,"./parser":105}],103:[function(require,module,exports){
+},{"./ast":105,"./parser":109}],107:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -7613,7 +7900,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":108}],104:[function(require,module,exports){
+},{"../exception":112}],108:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -8556,7 +8843,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":100,"../exception":108}],105:[function(require,module,exports){
+},{"../base":104,"../exception":112}],109:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -9047,7 +9334,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],106:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -9186,7 +9473,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":107}],107:[function(require,module,exports){
+},{"./visitor":111}],111:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -9199,7 +9486,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],108:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -9228,7 +9515,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],109:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -9366,7 +9653,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":100,"./exception":108,"./utils":111}],110:[function(require,module,exports){
+},{"./base":104,"./exception":112,"./utils":115}],114:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -9378,7 +9665,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],111:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -9455,7 +9742,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":110}],112:[function(require,module,exports){
+},{"./safe-string":114}],116:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -9482,7 +9769,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":98,"../dist/cjs/handlebars/compiler/printer":106,"../dist/cjs/handlebars/compiler/visitor":107,"fs":91}],113:[function(require,module,exports){
+},{"../dist/cjs/handlebars":102,"../dist/cjs/handlebars/compiler/printer":110,"../dist/cjs/handlebars/compiler/visitor":111,"fs":93}],117:[function(require,module,exports){
 var _ = require('underscore'),
   isServer = typeof window === 'undefined';
 
@@ -9611,7 +9898,7 @@ function getProperty(key, context, options) {
   return context[key] || (options.data || {})[key];
 }
 
-},{"rendr/shared/base/view":123,"underscore":130}],114:[function(require,module,exports){
+},{"rendr/shared/base/view":127,"underscore":134}],118:[function(require,module,exports){
 var cachedTemplates = {};
 
 module.exports = function(Handlebars) {
@@ -9676,7 +9963,7 @@ module.exports = function(Handlebars) {
   }
 };
 
-},{}],115:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     BaseView = require('../shared/base/view'),
@@ -9740,7 +10027,7 @@ module.exports = BaseView.extend({
 
 });
 
-},{"../shared/base/view":123,"backbone":118,"jquery":"EoZ3ID","underscore":130}],116:[function(require,module,exports){
+},{"../shared/base/view":127,"backbone":122,"jquery":"EoZ3ID","underscore":134}],120:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -10041,7 +10328,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
   });
 };
 
-},{"../shared/base/router":122,"../shared/base/view":123,"backbone":118,"jquery":"EoZ3ID","underscore":130}],117:[function(require,module,exports){
+},{"../shared/base/router":126,"../shared/base/view":127,"backbone":122,"jquery":"EoZ3ID","underscore":134}],121:[function(require,module,exports){
 (function (process){
 /*global setImmediate: false, setTimeout: false, console: false */
 (function () {
@@ -11003,7 +11290,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
 }());
 
 }).call(this,require("JkpR2F"))
-},{"JkpR2F":95}],118:[function(require,module,exports){
+},{"JkpR2F":97}],122:[function(require,module,exports){
 //     Backbone.js 1.0.0
 
 //     (c) 2010-2013 Jeremy Ashkenas, DocumentCloud Inc.
@@ -12576,7 +12863,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
 
 }).call(this);
 
-},{"underscore":130}],119:[function(require,module,exports){
+},{"underscore":134}],123:[function(require,module,exports){
 /**
  * This is the app instance that is shared between client and server.
  * The client also subclasses it for client-specific stuff.
@@ -12689,7 +12976,7 @@ module.exports = Backbone.Model.extend({
   }
 });
 
-},{"../client/app_view":115,"./fetcher":124,"./modelUtils":125,"app/router":"86KJBY","backbone":118,"jquery":"EoZ3ID"}],120:[function(require,module,exports){
+},{"../client/app_view":119,"./fetcher":128,"./modelUtils":129,"app/router":"86KJBY","backbone":122,"jquery":"EoZ3ID"}],124:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     syncer = require('../syncer'),
@@ -12816,7 +13103,7 @@ _.extend(BaseCollection.prototype, syncer);
 
 module.exports = BaseCollection;
 
-},{"../syncer":129,"./model":121,"backbone":118,"jquery":"EoZ3ID","underscore":130}],121:[function(require,module,exports){
+},{"../syncer":133,"./model":125,"backbone":122,"jquery":"EoZ3ID","underscore":134}],125:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     syncer = require('../syncer'),
@@ -12871,7 +13158,7 @@ _.extend(BaseModel.prototype, syncer);
 
 module.exports = BaseModel;
 
-},{"../syncer":129,"backbone":118,"jquery":"EoZ3ID","underscore":130}],122:[function(require,module,exports){
+},{"../syncer":133,"backbone":122,"jquery":"EoZ3ID","underscore":134}],126:[function(require,module,exports){
 var _ = require('underscore'),
   Backbone = require('backbone'),
   isServer = (typeof window === 'undefined'),
@@ -13070,7 +13357,7 @@ module.exports.setAMDEnvironment = function(flag) {
   isAMDEnvironment = flag;
 };
 
-},{"backbone":118,"jquery":"EoZ3ID","underscore":130}],123:[function(require,module,exports){
+},{"backbone":122,"jquery":"EoZ3ID","underscore":134}],127:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -13604,7 +13891,7 @@ if (typeof window === 'undefined') {
   BaseView.prototype.delegateEvents = noop;
 }
 
-},{"async":117,"backbone":118,"jquery":"EoZ3ID","underscore":130}],124:[function(require,module,exports){
+},{"async":121,"backbone":122,"jquery":"EoZ3ID","underscore":134}],128:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     async = require('async'),
@@ -14003,7 +14290,7 @@ Fetcher.prototype.fetch = function(fetchSpecs, options, callback) {
 // Mixin Backbone.Events for events that work in client & server.
 _.extend(Fetcher.prototype, Backbone.Events);
 
-},{"./store/collection_store":126,"./store/model_store":128,"async":117,"backbone":118,"jquery":"EoZ3ID","underscore":130}],125:[function(require,module,exports){
+},{"./store/collection_store":130,"./store/model_store":132,"async":121,"backbone":122,"jquery":"EoZ3ID","underscore":134}],129:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -14143,7 +14430,7 @@ ModelUtils.prototype.modelIdAttribute = function(modelName, callback) {
   });
 };
 
-},{"./base/collection":120,"./base/model":121}],126:[function(require,module,exports){
+},{"./base/collection":124,"./base/model":125}],130:[function(require,module,exports){
 var _ = require('underscore'),
     Super = require('./memory_store');
 
@@ -14217,7 +14504,7 @@ function sortParams(params) {
   return sorted;
 }
 
-},{"./memory_store":127,"underscore":130}],127:[function(require,module,exports){
+},{"./memory_store":131,"underscore":134}],131:[function(require,module,exports){
 module.exports = MemoryStore;
 
 function MemoryStore(options) {
@@ -14295,7 +14582,7 @@ MemoryStore.prototype._formatKey = function(key) {
   return this._versionKey(key);
 };
 
-},{}],128:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 var _ = require('underscore'),
     Super = require('./memory_store');
 
@@ -14394,7 +14681,7 @@ ModelStore.prototype._getModelStoreKey = function(modelName, id) {
   return this._keyPrefix(modelName) + ":" + id;
 }
 
-},{"./memory_store":127,"underscore":130}],129:[function(require,module,exports){
+},{"./memory_store":131,"underscore":134}],133:[function(require,module,exports){
 /**
  * `syncer` is a collection of instance methods that are mixed into the prototypes
  * of `BaseModel` and `BaseCollection`. The purpose is to encapsulate shared logic
@@ -14628,7 +14915,7 @@ syncer.interpolateParams = function interpolateParams(model, url, params) {
   return url;
 };
 
-},{"backbone":118,"jquery":"EoZ3ID","underscore":130}],130:[function(require,module,exports){
+},{"backbone":122,"jquery":"EoZ3ID","underscore":134}],134:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -15906,7 +16193,7 @@ syncer.interpolateParams = function interpolateParams(model, url, params) {
 
 }).call(this);
 
-},{}],131:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 require("chai").should();
 
 var Repos = require('../../../app/collections/repos');
@@ -15926,7 +16213,7 @@ describe('Repos', function() {
 
 });
 
-},{"../../../app/collections/repos":"clZNru","chai":61}],132:[function(require,module,exports){
+},{"../../../app/collections/repos":"clZNru","chai":63}],136:[function(require,module,exports){
 require("chai").should();
 
 var User = require('../../../app/models/user');
@@ -15940,7 +16227,7 @@ describe('User', function() {
 
 });
 
-},{"../../../app/models/user":"pLMDjU","chai":61}],133:[function(require,module,exports){
+},{"../../../app/models/user":"pLMDjU","chai":63}],137:[function(require,module,exports){
 require('chai');
 var UsersShowView = require('../../../app/views/users/show')
   , App = require('../../../app/app')
@@ -15961,4 +16248,25 @@ describe('UsersShowView', function() {
 
 });
 
-},{"../../../app/app":"LentoW","../../../app/views/users/show":"/O4NWC","chai":61}]},{},[131,132,133])
+},{"../../../app/app":"LentoW","../../../app/views/users/show":"/O4NWC","chai":63}],138:[function(require,module,exports){
+require('chai');
+var WishlistsView = require('../../../app/views/wishlists/index')
+  , App = require('../../../app/app')
+;
+
+describe('WishlistsView', function() {
+
+  beforeEach(function() {
+    this.app = new App({rootPath: '/'});
+  });
+
+  it('should have repos data in getTemplateData', function() {
+    var repos = [{foo: 'bar'}];
+    var view = new WishlistsView({ repos: repos, app: this.app });
+    var data = view.getTemplateData();
+    data.should.have.property('repos', repos);
+  });
+
+});
+
+},{"../../../app/app":"LentoW","../../../app/views/wishlists/index":"GCGXSt","chai":63}]},{},[135,136,137,138])

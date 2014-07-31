@@ -1,10 +1,10 @@
-<h1>{{localize "My Wishlists"}}</h1>
+<h1>{{t "My Wishlists"}}</h1>
 
 <ul>
 {{#each models}}
   <li>
     <a href="/wishlist/{{id}}">{{title}}</a>
-    ({{#if default}}{{localize "default"}} {{/if}}{{count_all_active_items}} {{localize count_inflected_label}})
+    ({{#if default}}{{t "default"}}, {{/if}}{{t "num_items" count_all_active_items}})
   </li>
 {{/each}}
 </ul>
