@@ -3,6 +3,7 @@ var User = require('../models/user')
 
 module.exports = Base.extend({
   model: User,
+  api: 'github',
   url: '/users'
 });
 module.exports.id = 'Users';

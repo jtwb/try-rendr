@@ -21,7 +21,7 @@ module.exports = {
 
       // Because the page title depends on the Repo model, we wait to set it
       // until the fetch is complete.
-      this.app.set('title', 'Wishlist: ');
+      this.app.set('title', 'Wishlist');
 
       callback(null, result);
     }.bind(this));

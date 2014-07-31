@@ -75,6 +75,7 @@ var Repo = require('../models/repo')
 
 module.exports = Base.extend({
   model: Repo,
+  api: 'github',
   url: function() {
     if (this.params.user != null) {
       return '/users/:user/repos';
@@ -91,6 +92,7 @@ var User = require('../models/user')
 
 module.exports = Base.extend({
   model: User,
+  api: 'github',
   url: '/users'
 });
 module.exports.id = 'Users';
@@ -222,7 +224,7 @@ module.exports = {
 
       // Because the page title depends on the Repo model, we wait to set it
       // until the fetch is complete.
-      this.app.set('title', 'Wishlist: ');
+      this.app.set('title', 'Wishlist');
 
       callback(null, result);
     }.bind(this));
@@ -290,29 +292,31 @@ module.exports.id = 'Build';
 
 },{"./base":"qnrstJ"}],"app/models/build":[function(require,module,exports){
 module.exports=require('Lkugus');
+},{}],"app/models/repo":[function(require,module,exports){
+module.exports=require('WQcoKQ');
 },{}],"WQcoKQ":[function(require,module,exports){
 var Base = require('./base');
 
 module.exports = Base.extend({
   url: '/repos/:owner/:name',
+  api: 'github',
   idAttribute: 'name'
 });
 module.exports.id = 'Repo';
 
-},{"./base":"qnrstJ"}],"app/models/repo":[function(require,module,exports){
-module.exports=require('WQcoKQ');
+},{"./base":"qnrstJ"}],"app/models/user":[function(require,module,exports){
+module.exports=require('pLMDjU');
 },{}],"pLMDjU":[function(require,module,exports){
 var Base = require('./base');
 
 module.exports = Base.extend({
   url: '/users/:login',
+  api: 'github',
   idAttribute: 'login'
 });
 module.exports.id = 'User';
 
-},{"./base":"qnrstJ"}],"app/models/user":[function(require,module,exports){
-module.exports=require('pLMDjU');
-},{}],"app/models/wishlist":[function(require,module,exports){
+},{"./base":"qnrstJ"}],"app/models/wishlist":[function(require,module,exports){
 module.exports=require('LFobQP');
 },{}],"LFobQP":[function(require,module,exports){
 var Base = require('./base');
@@ -686,8 +690,6 @@ function program1(depth0,data) {
 return templates;
 
 };
-},{}],"app/views/app_view":[function(require,module,exports){
-module.exports=require('5syn3K');
 },{}],"5syn3K":[function(require,module,exports){
 var BaseAppView = require('rendr/client/app_view')
   , $ = require('jquery')
@@ -695,7 +697,7 @@ var BaseAppView = require('rendr/client/app_view')
 ;
 
 module.exports = BaseAppView.extend({
-  postInitialize: function() {
+  initialize: function() {
     this.app.on('change:loading', function(app, loading) {
       $body.toggleClass('loading', loading);
     });
@@ -706,7 +708,9 @@ module.exports = BaseAppView.extend({
   }
 });
 
-},{"jquery":"EoZ3ID","rendr/client/app_view":119}],"6kWBjj":[function(require,module,exports){
+},{"jquery":"EoZ3ID","rendr/client/app_view":119}],"app/views/app_view":[function(require,module,exports){
+module.exports=require('5syn3K');
+},{}],"6kWBjj":[function(require,module,exports){
 var RendrView = require('rendr/shared/base/view');
 
 // Create a base view, for adding common extensions to our
