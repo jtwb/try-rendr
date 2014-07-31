@@ -58,14 +58,14 @@ module.exports = BaseApp.extend({
 
 });
 
-},{"./lib/handlebarsHelpers":"Cu+0Ho","./views/app_view":"5syn3K","rendr/shared/app":74}],"app/app":[function(require,module,exports){
+},{"./lib/handlebarsHelpers":"Cu+0Ho","./views/app_view":"5syn3K","rendr/shared/app":86}],"app/app":[function(require,module,exports){
 module.exports=require('LentoW');
 },{}],"rCVOCK":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/collection');
 
 module.exports = RendrBase.extend({});
 
-},{"rendr/shared/base/collection":75}],"app/collections/base":[function(require,module,exports){
+},{"rendr/shared/base/collection":87}],"app/collections/base":[function(require,module,exports){
 module.exports=require('rCVOCK');
 },{}],"app/collections/repos":[function(require,module,exports){
 module.exports=require('clZNru');
@@ -97,10 +97,23 @@ module.exports.id = 'Users';
 
 },{"../models/user":"pLMDjU","./base":"rCVOCK"}],"app/collections/users":[function(require,module,exports){
 module.exports=require('IELbLo');
+},{}],"dbheZC":[function(require,module,exports){
+var Wishlist = require('../models/wishlist')
+  , Base = require('./base');
+
+module.exports = Base.extend({
+  model: Wishlist,
+  url: '/wishlists-sample.json',
+  jsonKey: 'wishlists'
+});
+module.exports.id = 'Wishlists';
+
+},{"../models/wishlist":"LFobQP","./base":"rCVOCK"}],"app/collections/wishlists":[function(require,module,exports){
+module.exports=require('dbheZC');
 },{}],"n5JPJf":[function(require,module,exports){
 module.exports = {
   index: function(params, callback) {
-    this.app.set('title', 'Home');
+    this.app.set('title', 'My Wishlists');
     callback();
   }
 };
@@ -177,7 +190,56 @@ module.exports = {
   }
 };
 
-},{"underscore":85}],"Cu+0Ho":[function(require,module,exports){
+},{"underscore":97}],"bX80+R":[function(require,module,exports){
+module.exports = {
+  index: function(params, callback) {
+    this.app.set('title', 'My Wishlists');
+
+    var spec = {
+      collection: {collection: 'Wishlists', params: params}
+    };
+    this.app.fetch(spec, function(err, result) {
+      callback(err, result);
+    });
+  },
+
+  show: function(params, callback) {
+    var spec = {
+      model: {model: 'Wishlist', params: params}
+    };
+    this.app.fetch(spec, function(err, result) {
+      // We must check for an error before accessing `result.model` (below),
+      // which may be undefined if there's an error (404, 500, etc.).
+      if (err) return callback(err);
+
+      // Because the page title depends on the Repo model, we wait to set it
+      // until the fetch is complete.
+      this.app.set('title', 'Wishlist: ');
+
+      callback(null, result);
+    }.bind(this));
+  }
+};
+
+},{}],"app/controllers/wishlists_controller":[function(require,module,exports){
+module.exports=require('bX80+R');
+},{}],"P/YCR8":[function(require,module,exports){
+module.exports = {
+  'en': {
+    'My Wishlists': "My Wishlists",
+    'item': 'item',
+    'items': 'items',
+    'default': 'default'
+  }
+};
+
+},{}],"app/i18n/all":[function(require,module,exports){
+module.exports=require('P/YCR8');
+},{}],"app/lib/handlebarsHelpers":[function(require,module,exports){
+module.exports=require('Cu+0Ho');
+},{}],"Cu+0Ho":[function(require,module,exports){
+var lang = require('../i18n/all.js')
+
 /**
  * We inject the Handlebars instance, because this module doesn't know where
  * the actual Handlebars instance will come from.
@@ -186,20 +248,23 @@ module.exports = function(Handlebars) {
   return {
     copyright: function(year) {
       return new Handlebars.SafeString("&copy;" + year);
+    },
+    localize: function(term) {
+      var language = 'en';
+      var bundle = lang[language];
+      return term in bundle ? bundle[term] : term;
     }
   };
 };
 
-},{}],"app/lib/handlebarsHelpers":[function(require,module,exports){
-module.exports=require('Cu+0Ho');
-},{}],"app/models/base":[function(require,module,exports){
+},{"../i18n/all.js":"P/YCR8"}],"app/models/base":[function(require,module,exports){
 module.exports=require('qnrstJ');
 },{}],"qnrstJ":[function(require,module,exports){
 var RendrBase = require('rendr/shared/base/model');
 
 module.exports = RendrBase.extend({});
 
-},{"rendr/shared/base/model":76}],"Lkugus":[function(require,module,exports){
+},{"rendr/shared/base/model":88}],"Lkugus":[function(require,module,exports){
 var Base = require('./base');
 
 module.exports = Base.extend({
@@ -232,7 +297,19 @@ module.exports.id = 'User';
 
 },{"./base":"qnrstJ"}],"app/models/user":[function(require,module,exports){
 module.exports=require('pLMDjU');
-},{}],"86KJBY":[function(require,module,exports){
+},{}],"app/models/wishlist":[function(require,module,exports){
+module.exports=require('LFobQP');
+},{}],"LFobQP":[function(require,module,exports){
+var Base = require('./base');
+
+module.exports = Base.extend({
+  url: '/wishlist-sample.json',
+  idAttribute: 'wishlist',
+  jsonKey: 'wishlist'
+});
+module.exports.id = 'Wishlist';
+
+},{"./base":"qnrstJ"}],"86KJBY":[function(require,module,exports){
 var BaseClientRouter = require('rendr/client/router');
 
 var Router = module.exports = function Router(options) {
@@ -255,8 +332,10 @@ Router.prototype.trackImpression = function() {
   }
 };
 
-},{"rendr/client/router":71}],"app/router":[function(require,module,exports){
+},{"rendr/client/router":83}],"app/router":[function(require,module,exports){
 module.exports=require('86KJBY');
+},{}],"app/routes":[function(require,module,exports){
+module.exports=require('bbl2t2');
 },{}],"bbl2t2":[function(require,module,exports){
 module.exports = function(match) {
   match('',                   'home#index');
@@ -264,10 +343,12 @@ module.exports = function(match) {
   match('repos/:owner/:name', 'repos#show');
   match('users'       ,       'users#index');
   match('users/:login',       'users#show');
+  match('wishlists'       ,    'wishlists#index');
+  match('wishlist/:login',    'wishlists#show');
 };
 
-},{}],"app/routes":[function(require,module,exports){
-module.exports=require('bbl2t2');
+},{}],"app/templates/compiledTemplates":[function(require,module,exports){
+module.exports=require('rFRVhs');
 },{}],"rFRVhs":[function(require,module,exports){
 module.exports = function(Handlebars) {
 
@@ -509,11 +590,91 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return buffer;
   });
 
+templates["wishlists/index"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, stack2, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1, options;
+  buffer += "\n  <li>\n    <a href=\"/wishlist/";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a>\n    (";
+  stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  if (stack1 = helpers.count_all_active_items) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.count_all_active_items; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " ";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, depth0.count_inflected_label, options) : helperMissing.call(depth0, "localize", depth0.count_inflected_label, options)))
+    + ")\n  </li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1, options;
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "default", options) : helperMissing.call(depth0, "localize", "default", options)))
+    + " ";
+  return buffer;
+  }
+
+  buffer += "<h1>";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.localize || depth0.localize),stack1 ? stack1.call(depth0, "My Wishlists", options) : helperMissing.call(depth0, "localize", "My Wishlists", options)))
+    + "</h1>\n\n<ul>\n";
+  stack2 = helpers.each.call(depth0, depth0.models, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n</ul>\n";
+  return buffer;
+  });
+
+templates["wishlists/show"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <li>\n    <img src=\"";
+  if (stack1 = helpers.thumbnail_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.thumbnail_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" />\n    ";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "<br />\n    ";
+  if (stack1 = helpers.total) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.total; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n  </li>\n";
+  return buffer;
+  }
+
+  buffer += "<h1>";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n\n<ul>\n";
+  stack1 = helpers.each.call(depth0, depth0.items, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</ul>\n";
+  return buffer;
+  });
+
 return templates;
 
 };
-},{}],"app/templates/compiledTemplates":[function(require,module,exports){
-module.exports=require('rFRVhs');
 },{}],"5syn3K":[function(require,module,exports){
 var BaseAppView = require('rendr/client/app_view')
   , $ = require('jquery')
@@ -532,7 +693,7 @@ module.exports = BaseAppView.extend({
   }
 });
 
-},{"jquery":"EoZ3ID","rendr/client/app_view":70}],"app/views/app_view":[function(require,module,exports){
+},{"jquery":"EoZ3ID","rendr/client/app_view":82}],"app/views/app_view":[function(require,module,exports){
 module.exports=require('5syn3K');
 },{}],"6kWBjj":[function(require,module,exports){
 var RendrView = require('rendr/shared/base/view');
@@ -541,7 +702,7 @@ var RendrView = require('rendr/shared/base/view');
 // application's views.
 module.exports = RendrView.extend({});
 
-},{"rendr/shared/base/view":78}],"app/views/base":[function(require,module,exports){
+},{"rendr/shared/base/view":90}],"app/views/base":[function(require,module,exports){
 module.exports=require('6kWBjj');
 },{}],"app/views/home/index":[function(require,module,exports){
 module.exports=require('to5G6a');
@@ -615,7 +776,41 @@ module.exports.id = 'users/show';
 
 },{"../base":"6kWBjj"}],"app/views/users/show":[function(require,module,exports){
 module.exports=require('/O4NWC');
-},{}],"EoZ3ID":[function(require,module,exports){
+},{}],"app/views/wishlists/index":[function(require,module,exports){
+module.exports=require('GCGXSt');
+},{}],"GCGXSt":[function(require,module,exports){
+var BaseView = require('../base');
+
+module.exports = BaseView.extend({
+  className: 'wishlists',
+  getTemplateData: function() {
+    var data = BaseView.prototype.getTemplateData.call(this);
+    data.models.forEach(function(model) {
+      var count = model.count_all_active_items;
+      model.count_inflected_label =
+        count > 1 ? 'items' : 'item';
+    });
+    return data;
+  }
+});
+module.exports.id = 'wishlists/index';
+
+},{"../base":"6kWBjj"}],"app/views/wishlists/show":[function(require,module,exports){
+module.exports=require('zPzHVa');
+},{}],"zPzHVa":[function(require,module,exports){
+var BaseView = require('../base');
+
+module.exports = BaseView.extend({
+  className: 'wishlist-detail',
+  getTemplateData: function() {
+    var data = BaseView.prototype.getTemplateData.call(this);
+    console.log(data);
+    return data;
+  }
+});
+module.exports.id = 'wishlists/show';
+
+},{"../base":"6kWBjj"}],"EoZ3ID":[function(require,module,exports){
 (function (global){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*! jQuery v1.9.1 | (c) 2005, 2012 jQuery Foundation, Inc. | jquery.org/license
@@ -630,9 +825,9 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"jquery":[function(require,module,exports){
 module.exports=require('EoZ3ID');
-},{}],49:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 
-},{}],50:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -764,7 +959,7 @@ module.exports = function(options){
   return localExports;
 }
 
-},{"./shared/helpers":68,"./shared/templateFinder":69,"handlebars":67}],53:[function(require,module,exports){
+},{"./shared/helpers":80,"./shared/templateFinder":81,"handlebars":79}],65:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -802,7 +997,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":54,"./handlebars/compiler/ast":56,"./handlebars/compiler/base":57,"./handlebars/compiler/compiler":58,"./handlebars/compiler/javascript-compiler":59}],54:[function(require,module,exports){
+},{"./handlebars.runtime":66,"./handlebars/compiler/ast":68,"./handlebars/compiler/base":69,"./handlebars/compiler/compiler":70,"./handlebars/compiler/javascript-compiler":71}],66:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -835,7 +1030,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":55,"./handlebars/exception":63,"./handlebars/runtime":64,"./handlebars/safe-string":65,"./handlebars/utils":66}],55:[function(require,module,exports){
+},{"./handlebars/base":67,"./handlebars/exception":75,"./handlebars/runtime":76,"./handlebars/safe-string":77,"./handlebars/utils":78}],67:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -1016,7 +1211,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":63,"./utils":66}],56:[function(require,module,exports){
+},{"./exception":75,"./utils":78}],68:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -1244,7 +1439,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":63}],57:[function(require,module,exports){
+},{"../exception":75}],69:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -1260,7 +1455,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":56,"./parser":60}],58:[function(require,module,exports){
+},{"./ast":68,"./parser":72}],70:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -1730,7 +1925,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":63}],59:[function(require,module,exports){
+},{"../exception":75}],71:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -2673,7 +2868,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":55,"../exception":63}],60:[function(require,module,exports){
+},{"../base":67,"../exception":75}],72:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -3164,7 +3359,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],61:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -3303,7 +3498,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":62}],62:[function(require,module,exports){
+},{"./visitor":74}],74:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -3316,7 +3511,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],63:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -3345,7 +3540,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],64:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -3483,7 +3678,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":55,"./exception":63,"./utils":66}],65:[function(require,module,exports){
+},{"./base":67,"./exception":75,"./utils":78}],77:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -3495,7 +3690,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],66:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -3572,7 +3767,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":65}],67:[function(require,module,exports){
+},{"./safe-string":77}],79:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -3599,7 +3794,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":53,"../dist/cjs/handlebars/compiler/printer":61,"../dist/cjs/handlebars/compiler/visitor":62,"fs":49}],68:[function(require,module,exports){
+},{"../dist/cjs/handlebars":65,"../dist/cjs/handlebars/compiler/printer":73,"../dist/cjs/handlebars/compiler/visitor":74,"fs":61}],80:[function(require,module,exports){
 var _ = require('underscore'),
   isServer = typeof window === 'undefined';
 
@@ -3728,7 +3923,7 @@ function getProperty(key, context, options) {
   return context[key] || (options.data || {})[key];
 }
 
-},{"rendr/shared/base/view":78,"underscore":85}],69:[function(require,module,exports){
+},{"rendr/shared/base/view":90,"underscore":97}],81:[function(require,module,exports){
 var cachedTemplates = {};
 
 module.exports = function(Handlebars) {
@@ -3793,7 +3988,7 @@ module.exports = function(Handlebars) {
   }
 };
 
-},{}],70:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     BaseView = require('../shared/base/view'),
@@ -3857,7 +4052,7 @@ module.exports = BaseView.extend({
 
 });
 
-},{"../shared/base/view":78,"backbone":73,"jquery":"EoZ3ID","underscore":85}],71:[function(require,module,exports){
+},{"../shared/base/view":90,"backbone":85,"jquery":"EoZ3ID","underscore":97}],83:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -4158,7 +4353,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
   });
 };
 
-},{"../shared/base/router":77,"../shared/base/view":78,"backbone":73,"jquery":"EoZ3ID","underscore":85}],72:[function(require,module,exports){
+},{"../shared/base/router":89,"../shared/base/view":90,"backbone":85,"jquery":"EoZ3ID","underscore":97}],84:[function(require,module,exports){
 (function (process){
 /*global setImmediate: false, setTimeout: false, console: false */
 (function () {
@@ -5120,7 +5315,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
 }());
 
 }).call(this,require("JkpR2F"))
-},{"JkpR2F":50}],73:[function(require,module,exports){
+},{"JkpR2F":62}],85:[function(require,module,exports){
 //     Backbone.js 1.0.0
 
 //     (c) 2010-2013 Jeremy Ashkenas, DocumentCloud Inc.
@@ -6693,7 +6888,7 @@ ClientRouter.prototype.getView = function(key, entryPath, callback) {
 
 }).call(this);
 
-},{"underscore":85}],74:[function(require,module,exports){
+},{"underscore":97}],86:[function(require,module,exports){
 /**
  * This is the app instance that is shared between client and server.
  * The client also subclasses it for client-specific stuff.
@@ -6806,7 +7001,7 @@ module.exports = Backbone.Model.extend({
   }
 });
 
-},{"../client/app_view":70,"./fetcher":79,"./modelUtils":80,"app/router":"86KJBY","backbone":73,"jquery":"EoZ3ID"}],75:[function(require,module,exports){
+},{"../client/app_view":82,"./fetcher":91,"./modelUtils":92,"app/router":"86KJBY","backbone":85,"jquery":"EoZ3ID"}],87:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     syncer = require('../syncer'),
@@ -6933,7 +7128,7 @@ _.extend(BaseCollection.prototype, syncer);
 
 module.exports = BaseCollection;
 
-},{"../syncer":84,"./model":76,"backbone":73,"jquery":"EoZ3ID","underscore":85}],76:[function(require,module,exports){
+},{"../syncer":96,"./model":88,"backbone":85,"jquery":"EoZ3ID","underscore":97}],88:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     syncer = require('../syncer'),
@@ -6988,7 +7183,7 @@ _.extend(BaseModel.prototype, syncer);
 
 module.exports = BaseModel;
 
-},{"../syncer":84,"backbone":73,"jquery":"EoZ3ID","underscore":85}],77:[function(require,module,exports){
+},{"../syncer":96,"backbone":85,"jquery":"EoZ3ID","underscore":97}],89:[function(require,module,exports){
 var _ = require('underscore'),
   Backbone = require('backbone'),
   isServer = (typeof window === 'undefined'),
@@ -7187,7 +7382,7 @@ module.exports.setAMDEnvironment = function(flag) {
   isAMDEnvironment = flag;
 };
 
-},{"backbone":73,"jquery":"EoZ3ID","underscore":85}],78:[function(require,module,exports){
+},{"backbone":85,"jquery":"EoZ3ID","underscore":97}],90:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -7721,7 +7916,7 @@ if (typeof window === 'undefined') {
   BaseView.prototype.delegateEvents = noop;
 }
 
-},{"async":72,"backbone":73,"jquery":"EoZ3ID","underscore":85}],79:[function(require,module,exports){
+},{"async":84,"backbone":85,"jquery":"EoZ3ID","underscore":97}],91:[function(require,module,exports){
 var _ = require('underscore'),
     Backbone = require('backbone'),
     async = require('async'),
@@ -8120,7 +8315,7 @@ Fetcher.prototype.fetch = function(fetchSpecs, options, callback) {
 // Mixin Backbone.Events for events that work in client & server.
 _.extend(Fetcher.prototype, Backbone.Events);
 
-},{"./store/collection_store":81,"./store/model_store":83,"async":72,"backbone":73,"jquery":"EoZ3ID","underscore":85}],80:[function(require,module,exports){
+},{"./store/collection_store":93,"./store/model_store":95,"async":84,"backbone":85,"jquery":"EoZ3ID","underscore":97}],92:[function(require,module,exports){
 /**
  * Since we make rendr files AMD friendly on app setup stage
  * we need to pretend that this code is pure commonjs
@@ -8260,7 +8455,7 @@ ModelUtils.prototype.modelIdAttribute = function(modelName, callback) {
   });
 };
 
-},{"./base/collection":75,"./base/model":76}],81:[function(require,module,exports){
+},{"./base/collection":87,"./base/model":88}],93:[function(require,module,exports){
 var _ = require('underscore'),
     Super = require('./memory_store');
 
@@ -8334,7 +8529,7 @@ function sortParams(params) {
   return sorted;
 }
 
-},{"./memory_store":82,"underscore":85}],82:[function(require,module,exports){
+},{"./memory_store":94,"underscore":97}],94:[function(require,module,exports){
 module.exports = MemoryStore;
 
 function MemoryStore(options) {
@@ -8412,7 +8607,7 @@ MemoryStore.prototype._formatKey = function(key) {
   return this._versionKey(key);
 };
 
-},{}],83:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 var _ = require('underscore'),
     Super = require('./memory_store');
 
@@ -8511,7 +8706,7 @@ ModelStore.prototype._getModelStoreKey = function(modelName, id) {
   return this._keyPrefix(modelName) + ":" + id;
 }
 
-},{"./memory_store":82,"underscore":85}],84:[function(require,module,exports){
+},{"./memory_store":94,"underscore":97}],96:[function(require,module,exports){
 /**
  * `syncer` is a collection of instance methods that are mixed into the prototypes
  * of `BaseModel` and `BaseCollection`. The purpose is to encapsulate shared logic
@@ -8745,7 +8940,7 @@ syncer.interpolateParams = function interpolateParams(model, url, params) {
   return url;
 };
 
-},{"backbone":73,"jquery":"EoZ3ID","underscore":85}],85:[function(require,module,exports){
+},{"backbone":85,"jquery":"EoZ3ID","underscore":97}],97:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -10023,4 +10218,4 @@ syncer.interpolateParams = function interpolateParams(model, url, params) {
 
 }).call(this);
 
-},{}]},{},["LentoW","rCVOCK","clZNru","IELbLo","n5JPJf","qk854H","SZ6WoB","Cu+0Ho","qnrstJ","Lkugus","WQcoKQ","pLMDjU","86KJBY","bbl2t2","rFRVhs","5syn3K","6kWBjj","to5G6a","T6DCWR","u40/HK","67Yhfb","ARwkjH","/O4NWC"])
+},{}]},{},["LentoW","rCVOCK","clZNru","IELbLo","dbheZC","n5JPJf","qk854H","SZ6WoB","bX80+R","P/YCR8","Cu+0Ho","qnrstJ","Lkugus","WQcoKQ","pLMDjU","LFobQP","86KJBY","bbl2t2","rFRVhs","5syn3K","6kWBjj","to5G6a","T6DCWR","u40/HK","67Yhfb","ARwkjH","/O4NWC","GCGXSt","zPzHVa"])

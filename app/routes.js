@@ -4,4 +4,6 @@ module.exports = function(match) {
   match('repos/:owner/:name', 'repos#show');
   match('users'       ,       'users#index');
   match('users/:login',       'users#show');
+  match('wishlists'       ,    'wishlists#index');
+  match('wishlist/:login',    'wishlists#show');
 };

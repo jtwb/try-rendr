@@ -18,6 +18,10 @@ app.use(express.bodyParser());
  */
 var dataAdapterConfig = {
   'default': {
+    host: 'localhost:3030',
+    protocol: 'http'
+  },
+  'github': {
     host: 'api.github.com',
     protocol: 'https'
   },

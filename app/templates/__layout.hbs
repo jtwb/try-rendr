@@ -6,13 +6,15 @@
     <title>{{appData.title}} | Rendr Example App</title>
 
     <link href="/styles.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/styles.css" media="screen" rel="stylesheet" type="text/css" />
+
   </head>
 
   <body class="">
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
           <div class="navbar-header">
-            <a class="navbar-brand" href="/">GitHub Browser</a>
+            <a class="navbar-brand" href="/">{{appData.title}}</a>
           </div>
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
@@ -25,6 +27,7 @@
     </div>
 
     <section id="content" class="container">
+      <a class="btn btn-large btn-primary" href="/">Button</a>
       {{{body}}}
     </section>
 
